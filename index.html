@@ -4,244 +4,479 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Albury Wodonga Avurudu Contributions</title>
-
 <style>
+/* ── Variables ─────────────────────────────────────────── */
 :root {
-  --red: #842032;
+  --red:    #842032;
+  --red2:   #a02840;
   --yellow: #F6BB00;
-  --blue: #1E3A5F;
-  --bg: #f6f4ef;
+  --blue:   #1E3A5F;
+  --bg:     #f3ede3;
+  --card-bg:#fff;
+  --radius: 16px;
+  --shadow: 0 4px 20px rgba(0,0,0,.10);
+  --transition: .3s cubic-bezier(.4,0,.2,1);
 }
 
-* {
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
+/* ── Reset ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 body {
-  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
   background: var(--bg);
+  color: var(--blue);
+  min-height: 100vh;
+}
+
+/* ── Keyframes ─────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(.85); }
+  70%  { transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+@keyframes barGrow {
+  from { width: 0 !important; }
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(246,187,0,.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(246,187,0,0); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Header ────────────────────────────────────────────── */
+.header {
+  background: linear-gradient(135deg, var(--red) 0%, var(--red2) 100%);
+  color: #fff;
+  padding: 36px 20px 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp .6s ease both;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.logo {
+  width: 90px; height: 90px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255,255,255,.2);
+  border: 3px solid rgba(255,255,255,.4);
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+  animation: popIn .7s .1s ease both;
+}
+.logo img { width: 100%; height: 100%; object-fit: cover; }
+.header h1 {
+  font-size: clamp(18px, 5vw, 26px);
+  font-weight: 700;
+  letter-spacing: .3px;
+  text-shadow: 0 2px 6px rgba(0,0,0,.2);
+  animation: fadeUp .6s .2s ease both;
+}
+.header p.subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  opacity: .8;
+  animation: fadeUp .6s .3s ease both;
+}
+
+/* ── Page wrapper ───────────────────────────────────────── */
+.page { max-width: 680px; margin: 0 auto; padding: 16px 14px 40px; }
+
+/* ── Section card ───────────────────────────────────────── */
+.section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 18px;
+  margin-bottom: 18px;
+  animation: fadeUp .5s ease both;
+}
+.section:nth-child(1) { animation-delay: .15s; }
+.section:nth-child(2) { animation-delay: .25s; }
+.section:nth-child(3) { animation-delay: .35s; }
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.section-title .icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.section-title .icon.red    { background: #fdeaea; }
+.section-title .icon.yellow { background: #fff8e1; }
+.section-title .icon.blue   { background: #e8eef5; }
+.section-title h2 {
+  font-size: 17px;
+  font-weight: 700;
   color: var(--blue);
 }
 
-/* HEADER */
-.header {
-  background: var(--red);
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-.logo {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 10px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #ccc;
-}
-
-.logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.header h1 {
-  margin: 0;
-  font-size: 20px;
-}
-
-/* SECTION */
-.section {
-  padding: 15px;
-  margin: 10px;
-  background: white;
-  border-radius: 12px;
-}
-
-.section h2 {
-  margin: 0 0 10px;
-  border-bottom: 2px solid var(--yellow);
-  padding-bottom: 5px;
-}
-
-/* STATUS */
+/* ── Status grid ────────────────────────────────────────── */
 .status-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
-
 .card {
-  background: var(--red);
-  color: white;
-  padding: 12px;
-  border-radius: 10px;
-  font-size: 14px;
+  background: linear-gradient(135deg, var(--red) 0%, var(--red2) 100%);
+  color: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 13px;
+  box-shadow: 0 3px 12px rgba(132,32,50,.25);
+  animation: popIn .4s ease both;
+  transition: transform var(--transition), box-shadow var(--transition);
 }
-
+.card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(132,32,50,.3); }
+.card .item-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.card .counts    { font-size: 12px; opacity: .9; margin-bottom: 2px; }
+.card .remaining {
+  font-size: 11px;
+  background: rgba(255,255,255,.18);
+  border-radius: 6px;
+  padding: 2px 6px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.card .remaining.done { background: rgba(246,187,0,.35); }
 .progress {
-  height: 6px;
-  background: #ddd;
-  border-radius: 5px;
-  margin-top: 6px;
+  height: 7px;
+  background: rgba(255,255,255,.25);
+  border-radius: 99px;
+  overflow: hidden;
 }
-
 .progress-bar {
   height: 100%;
   background: var(--yellow);
+  border-radius: 99px;
+  animation: barGrow .8s ease both;
+  transition: width .6s ease;
 }
 
-/* FORM */
-form {
-  display: grid;
-  gap: 10px;
+/* Skeleton loader */
+.skeleton {
+  background: linear-gradient(90deg, #eee 25%, #f8f8f8 50%, #eee 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.2s infinite linear;
+  border-radius: 14px;
+  height: 96px;
 }
 
+/* ── Form ───────────────────────────────────────────────── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
 input, select {
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #e0e0e0;
   font-size: 16px;
+  color: var(--blue);
+  background: #fafafa;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--red);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(132,32,50,.12);
+}
+input::placeholder { color: #bbb; }
+
+/* custom select arrow */
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 14px; top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #999;
+  font-size: 14px;
 }
 
-button {
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: var(--yellow);
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
+/* qty row */
 .qty-wrap {
   display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
   overflow: hidden;
+  background: #fafafa;
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
-
+.qty-wrap:focus-within {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(132,32,50,.12);
+  background: #fff;
+}
 .qty-wrap input {
   flex: 1;
   border: none;
   border-radius: 0;
-  padding: 12px;
-  font-size: 16px;
-  outline: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 13px 14px;
 }
-
-.qty-wrap .unit-label {
-  padding: 0 14px;
-  color: #555;
+.qty-wrap input:focus { box-shadow: none; background: transparent; }
+.unit-label {
+  display: flex; align-items: center;
+  padding: 0 16px;
+  background: #f0f0f0;
+  border-left: 1.5px solid #e0e0e0;
+  color: var(--blue);
+  font-weight: 700;
   font-size: 15px;
   white-space: nowrap;
-  background: #f5f5f5;
-  border-left: 1px solid #ccc;
-  height: 100%;
-  display: flex;
-  align-items: center;
+  transition: background var(--transition), color var(--transition);
+  min-width: 60px;
+  justify-content: center;
+}
+.unit-label.active {
+  background: #fdeaea;
+  color: var(--red);
+}
+
+/* submit button */
+.btn-submit {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--red), var(--red2));
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  letter-spacing: .4px;
+  box-shadow: 0 4px 14px rgba(132,32,50,.35);
+  transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
+  margin-top: 4px;
+  position: relative;
+  overflow: hidden;
+}
+.btn-submit::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background var(--transition);
+}
+.btn-submit:hover:not(:disabled)::after { background: rgba(255,255,255,.08); }
+.btn-submit:active:not(:disabled) { transform: scale(.98); }
+.btn-submit:disabled { opacity: .7; cursor: not-allowed; }
+.btn-submit.loading { animation: pulse .9s infinite; }
+
+.spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
 }
 
 #status-msg {
-  font-size: 14px;
-  min-height: 18px;
-  color: var(--blue);
+  min-height: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  transition: opacity var(--transition);
+  border-radius: 8px;
+  padding: 6px 0;
 }
+#status-msg.success { color: #2a7a45; background: #eafaf0; }
+#status-msg.error   { color: #b02020; background: #fdeaea; }
 
-/* TABLE */
-table {
-  width: 100%;
-  border-collapse: collapse;
+/* ── Contributors table ─────────────────────────────────── */
+.table-wrap { overflow-x: auto; border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead tr {
+  background: linear-gradient(90deg, var(--blue), #2a4f7a);
 }
-
 th {
-  background: var(--blue);
-  color: white;
-  padding: 8px;
+  color: #fff;
+  padding: 11px 12px;
   text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .6px;
 }
-
-td {
-  padding: 8px;
-  border-bottom: 1px solid #eee;
+th:last-child, td:last-child { text-align: right; }
+tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background var(--transition);
+  animation: rowIn .3s ease both;
 }
+tbody tr:hover { background: #faf8f5; }
+tbody tr:last-child { border-bottom: none; }
+td { padding: 11px 12px; color: var(--blue); }
+td .item-badge {
+  display: inline-block;
+  background: #fdeaea;
+  color: var(--red);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+td .qty-badge {
+  display: inline-block;
+  background: #e8eef5;
+  color: var(--blue);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.empty-state {
+  text-align: center;
+  padding: 32px 12px;
+  color: #bbb;
+  font-size: 14px;
+}
+.empty-state .emoji { font-size: 32px; display: block; margin-bottom: 8px; }
 
-/* RESPONSIVE */
-@media (min-width: 600px) {
-  .status-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
-
-  .section {
-    max-width: 700px;
-    margin: 15px auto;
-  }
-
-  .header h1 {
-    font-size: 24px;
-  }
+/* ── Mobile tweaks ──────────────────────────────────────── */
+@media (max-width: 400px) {
+  .status-grid { grid-template-columns: 1fr; }
+  .page { padding: 12px 10px 36px; }
+  .section { padding: 18px 14px; }
+}
+@media (min-width: 500px) {
+  .status-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
-
 <body>
 
+<!-- HEADER -->
 <div class="header">
   <div class="logo">
-    <img src="data:image/png;base64,REPLACE_THIS_BASE64">
+    <img src="data:image/png;base64,REPLACE_THIS_BASE64" alt="logo">
   </div>
   <h1>Albury Wodonga අලුත් අවුරුදු 2026</h1>
+  <p class="subtitle">Community Contributions Tracker</p>
 </div>
 
-<div class="section">
-  <h2>Current Contributions</h2>
-  <div class="status-grid" id="statusGrid"><em>Loading...</em></div>
-</div>
+<div class="page">
 
-<div class="section">
-  <h2>Add Your Contribution</h2>
-  <form id="form">
-    <input id="name" placeholder="Full Name" required>
-    <input id="contact" placeholder="Phone Number" required>
-
-    <select id="item" required>
-      <option value="">-- Select Item --</option>
-      <option>කිරි බත්</option>
-      <option>කට්ට සම්බෝල</option>
-      <option>සීනි සම්බල්</option>
-      <option>ලුණු මිරිස්</option>
-    </select>
-
-    <div class="qty-wrap">
-      <input id="qty" type="number" min="1" placeholder="Quantity" required>
-      <span class="unit-label" id="qty-unit">—</span>
+  <!-- STATUS -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon red">📊</div>
+      <h2>Current Contributions</h2>
     </div>
-    <button type="submit" id="submitBtn">Submit</button>
-    <div id="status-msg"></div>
-  </form>
-</div>
+    <div class="status-grid" id="statusGrid">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </div>
+  </div>
 
-<div class="section">
-  <h2>Contributors</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Item</th>
-        <th>Quantity</th>
-      </tr>
-    </thead>
-    <tbody id="contributors"></tbody>
-  </table>
-</div>
+  <!-- FORM -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon yellow">✍️</div>
+      <h2>Add Your Contribution</h2>
+    </div>
+    <form id="form" novalidate>
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input id="name" type="text" placeholder="Enter your name" required autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="contact">Phone Number</label>
+        <input id="contact" type="tel" placeholder="e.g. 0412 345 678" required autocomplete="tel">
+      </div>
+      <div class="form-group">
+        <label for="item">Item</label>
+        <div class="select-wrap">
+          <select id="item" required>
+            <option value="">-- Select an item --</option>
+            <option>කිරි බත්</option>
+            <option>කට්ට සම්බෝල</option>
+            <option>සීනි සම්බල්</option>
+            <option>ලුණු මිරිස්</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="qty">Quantity</label>
+        <div class="qty-wrap">
+          <input id="qty" type="number" min="1" placeholder="Enter amount" required>
+          <span class="unit-label" id="qty-unit">—</span>
+        </div>
+      </div>
+      <button type="submit" id="submitBtn" class="btn-submit">Submit Contribution</button>
+      <div id="status-msg"></div>
+    </form>
+  </div>
+
+  <!-- TABLE -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon blue">🙏</div>
+      <h2>Contributors</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Item</th>
+            <th>Qty</th>
+          </tr>
+        </thead>
+        <tbody id="contributors">
+          <tr><td colspan="3"><div class="empty-state"><span class="emoji">⏳</span>Loading...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /page -->
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyWVDNNqrE_GRaMMFxWHr6t0zAt6ulckRiluTfi3c1HAjMzuSdnAmn39hYJePT8p-na/exec";
@@ -255,7 +490,7 @@ const config = {
 
 let data = [];
 
-// JSONP — bypasses CORS entirely; works with Google Apps Script redirects
+// JSONP
 function jsonp(url) {
   return new Promise((resolve, reject) => {
     const id = "_cb" + Date.now();
@@ -290,28 +525,44 @@ function render() {
   // Status cards
   const grid = document.getElementById("statusGrid");
   grid.innerHTML = "";
-  Object.keys(config).forEach(item => {
-    const t = totals[item];
+  Object.keys(config).forEach((item, i) => {
+    const t   = totals[item];
     const req = config[item].required;
     const unit = config[item].unit;
     const remaining = Math.max(req - t, 0);
     const pct = Math.min((t / req) * 100, 100).toFixed(0);
-    grid.innerHTML += `
-      <div class="card">
-        <strong>${item}</strong><br>
-        Collected: ${t} / ${req} ${unit}<br>
-        <small>Remaining: ${remaining} ${unit}</small>
-        <div class="progress">
-          <div class="progress-bar" style="width:${pct}%"></div>
-        </div>
+    const done = remaining === 0;
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.animationDelay = (i * 0.08) + "s";
+    card.innerHTML = `
+      <div class="item-name">${item}</div>
+      <div class="counts">${t} / ${req} ${unit} collected</div>
+      <span class="remaining${done ? ' done' : ''}">
+        ${done ? '✅ Complete!' : remaining + ' ' + unit + ' remaining'}
+      </span>
+      <div class="progress">
+        <div class="progress-bar" style="width:${pct}%"></div>
       </div>`;
+    grid.appendChild(card);
   });
 
   // Contributors table
   const tbody = document.getElementById("contributors");
-  tbody.innerHTML = data.length === 0
-    ? '<tr><td colspan="3" style="text-align:center;color:#999">No contributions yet</td></tr>'
-    : data.map(r => `<tr><td>${r.name}</td><td>${r.item}</td><td>${r.qty}</td></tr>`).join("");
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3"><div class="empty-state"><span class="emoji">🌸</span>No contributions yet. Be the first!</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = "";
+  [...data].reverse().forEach((r, i) => {
+    const tr = document.createElement("tr");
+    tr.style.animationDelay = (i * 0.04) + "s";
+    tr.innerHTML = `
+      <td>${r.name}</td>
+      <td><span class="item-badge">${r.item}</span></td>
+      <td><span class="qty-badge">${r.qty} ${config[r.item]?.unit || ""}</span></td>`;
+    tbody.appendChild(tr);
+  });
 }
 
 // SUBMIT
@@ -326,41 +577,52 @@ document.getElementById("form").addEventListener("submit", async (e) => {
   const qtyVal     = document.getElementById("qty").value;
 
   btn.disabled = true;
-  btn.textContent = "Submitting...";
+  btn.classList.add("loading");
+  btn.innerHTML = '<span class="spinner"></span>Submitting...';
+  status.className = "";
   status.textContent = "";
 
   try {
     const url = `${API_URL}?name=${encodeURIComponent(nameVal)}&contact=${encodeURIComponent(contactVal)}&item=${encodeURIComponent(itemVal)}&qty=${encodeURIComponent(qtyVal)}`;
     const res = await jsonp(url);
     if (res && res.status === "ok") {
-      // Give the sheet a moment to commit before reloading
       await new Promise(r => setTimeout(r, 1000));
       await load();
       e.target.reset();
       document.getElementById("qty-unit").textContent = "—";
-      status.textContent = "Contribution added successfully!";
-      setTimeout(() => { status.textContent = ""; }, 3000);
+      document.getElementById("qty-unit").classList.remove("active");
+      status.className = "success";
+      status.textContent = "✅ Contribution added successfully!";
+      setTimeout(() => { status.textContent = ""; status.className = ""; }, 4000);
     } else {
-      status.textContent = "Something went wrong. Please try again.";
+      status.className = "error";
+      status.textContent = "⚠️ Something went wrong. Please try again.";
     }
   } catch (err) {
     console.error("Submit error:", err);
-    status.textContent = "Network error. Please try again.";
+    status.className = "error";
+    status.textContent = "❌ Network error. Please try again.";
   }
 
-  btn.textContent = "Submit";
+  btn.innerHTML = "Submit Contribution";
+  btn.classList.remove("loading");
   btn.disabled = false;
 });
 
-// Update unit label when item is selected
+// Unit label on item change
 document.getElementById("item").addEventListener("change", function () {
-  const unit = config[this.value] ? config[this.value].unit : "—";
-  document.getElementById("qty-unit").textContent = unit;
+  const unitEl = document.getElementById("qty-unit");
+  if (config[this.value]) {
+    unitEl.textContent = config[this.value].unit;
+    unitEl.classList.add("active");
+  } else {
+    unitEl.textContent = "—";
+    unitEl.classList.remove("active");
+  }
 });
 
 // INIT
 load();
 </script>
-
 </body>
 </html>
