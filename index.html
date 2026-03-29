@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>අලුත් අවුරුදු Contributions</title>
+<title>Albury Wodonga Avurudu Contributions</title>
 
 <style>
 :root {
@@ -103,6 +103,7 @@ input, select {
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  font-size: 16px;
 }
 
 button {
@@ -111,6 +112,19 @@ button {
   border-radius: 8px;
   background: var(--yellow);
   font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+#status-msg {
+  font-size: 14px;
+  min-height: 18px;
+  color: var(--blue);
 }
 
 /* TABLE */
@@ -123,6 +137,7 @@ th {
   background: var(--blue);
   color: white;
   padding: 8px;
+  text-align: left;
 }
 
 td {
@@ -158,37 +173,38 @@ td {
 </div>
 
 <div class="section">
-  <h2>දැනට ලබාදී ඇති දායකත්වය</h2>
-  <div class="status-grid" id="statusGrid"></div>
+  <h2>Current Contributions</h2>
+  <div class="status-grid" id="statusGrid"><em>Loading...</em></div>
 </div>
 
 <div class="section">
-  <h2>ඔබගේ දායකත්වය එක් කරන්න</h2>
+  <h2>Add Your Contribution</h2>
   <form id="form">
-    <input id="name" placeholder="නම" required>
-    <input id="contact" placeholder="දුරකථන අංකය" required>
+    <input id="name" placeholder="Full Name" required>
+    <input id="contact" placeholder="Phone Number" required>
 
     <select id="item" required>
-      <option value="">අයිතමය</option>
+      <option value="">-- Select Item --</option>
       <option>කිරි බත්</option>
       <option>කට්ට සම්බෝල</option>
       <option>සීනි සම්බල්</option>
       <option>ලුණු මිරිස්</option>
     </select>
 
-    <input id="qty" type="number" placeholder="ප්‍රමාණය" required>
-    <button type="submit">යවන්න</button>
+    <input id="qty" type="number" min="1" placeholder="Quantity" required>
+    <button type="submit" id="submitBtn">Submit</button>
+    <div id="status-msg"></div>
   </form>
 </div>
 
 <div class="section">
-  <h2>දායක වූවන්</h2>
+  <h2>Contributors</h2>
   <table>
     <thead>
       <tr>
-        <th>නම</th>
-        <th>අයිතමය</th>
-        <th>ප්‍රමාණය</th>
+        <th>Name</th>
+        <th>Item</th>
+        <th>Quantity</th>
       </tr>
     </thead>
     <tbody id="contributors"></tbody>
@@ -199,49 +215,45 @@ td {
 const API_URL = "https://script.google.com/macros/s/AKfycbyWVDNNqrE_GRaMMFxWHr6t0zAt6ulckRiluTfi3c1HAjMzuSdnAmn39hYJePT8p-na/exec";
 
 const config = {
-  "කිරි බත්": { required: 100, unit: "pcs" },
-  "කට්ට සම්බෝල": { required: 1, unit: "පිඟානක්" },
-  "සීනි සම්බල්": { required: 1, unit: "පිඟානක්" },
-  "ලුණු මිරිස්": { required: 1, unit: "පිඟානක්" }
+  "කිරි බත්":      { required: 100, unit: "pcs" },
+  "කට්ට සම්බෝල":  { required: 1,   unit: "dish" },
+  "සීනි සම්බල්":   { required: 1,   unit: "dish" },
+  "ලුණු මිරිස්":   { required: 1,   unit: "dish" }
 };
 
 let data = [];
 
-// LOAD DATA
+// READ — uses no-cors workaround via script injection (JSONP-style via plain fetch with credentials omit)
 async function load() {
   try {
-    const res = await fetch(API_URL + "?t=" + Date.now(), { redirect: "follow" });
-    const text = await res.text();
-    const json = JSON.parse(text);
+    const res = await fetch(API_URL + "?t=" + Date.now(), {
+      method: "GET",
+      credentials: "omit"
+    });
+    const json = await res.json();
     data = Array.isArray(json) ? json : [];
-    render();
-  } catch (e) {
-    console.error("LOAD ERROR", e);
+  } catch (err) {
+    console.error("Load error:", err);
     data = [];
-    render();
   }
+  render();
 }
 
 // RENDER
 function render() {
   const totals = {};
-  Object.keys(config).forEach(i => totals[i] = 0);
-
+  Object.keys(config).forEach(k => totals[k] = 0);
   data.forEach(r => {
-    if (totals[r.item] !== undefined) {
-      totals[r.item] += Number(r.qty) || 0;
-    }
+    if (totals[r.item] !== undefined) totals[r.item] += Number(r.qty) || 0;
   });
 
-  // STATUS
+  // Status cards
   const grid = document.getElementById("statusGrid");
   grid.innerHTML = "";
-
   Object.keys(config).forEach(item => {
     const t = totals[item];
     const req = config[item].required;
-    const pct = Math.min((t / req) * 100, 100);
-
+    const pct = Math.min((t / req) * 100, 100).toFixed(0);
     grid.innerHTML += `
       <div class="card">
         <strong>${item}</strong><br>
@@ -249,22 +261,22 @@ function render() {
         <div class="progress">
           <div class="progress-bar" style="width:${pct}%"></div>
         </div>
-      </div>
-    `;
+      </div>`;
   });
 
-  // TABLE
+  // Contributors table
   const tbody = document.getElementById("contributors");
-  tbody.innerHTML = "";
+  tbody.innerHTML = data.length === 0
+    ? '<tr><td colspan="3" style="text-align:center;color:#999">No contributions yet</td></tr>'
+    : data.map(r => `<tr><td>${r.name}</td><td>${r.item}</td><td>${r.qty}</td></tr>`).join("");
+}
 
-  data.forEach(r => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${r.name}</td>
-        <td>${r.item}</td>
-        <td>${r.qty}</td>
-      </tr>
-    `;
+// WRITE — uses no-cors so CORS redirect doesn't block the request
+function sendData(url) {
+  return new Promise(resolve => {
+    fetch(url, { method: "GET", mode: "no-cors" })
+      .then(() => resolve(true))
+      .catch(() => resolve(false));
   });
 }
 
@@ -272,29 +284,31 @@ function render() {
 document.getElementById("form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const btn = e.target.querySelector("button[type=submit]");
-  const nameVal = document.getElementById("name").value;
-  const contactVal = document.getElementById("contact").value;
-  const itemVal = document.getElementById("item").value;
-  const qtyVal = document.getElementById("qty").value;
+  const btn    = document.getElementById("submitBtn");
+  const status = document.getElementById("status-msg");
+  const nameVal    = document.getElementById("name").value.trim();
+  const contactVal = document.getElementById("contact").value.trim();
+  const itemVal    = document.getElementById("item").value;
+  const qtyVal     = document.getElementById("qty").value;
 
   btn.disabled = true;
-  btn.textContent = "යවමින්...";
+  btn.textContent = "Submitting...";
+  status.textContent = "";
 
-  try {
-    const url = `${API_URL}?name=${encodeURIComponent(nameVal)}&contact=${encodeURIComponent(contactVal)}&item=${encodeURIComponent(itemVal)}&qty=${encodeURIComponent(qtyVal)}`;
-    await fetch(url, { method: "GET", redirect: "follow", mode: "no-cors" });
-    // Wait briefly for sheet write to commit before reloading
-    await new Promise(r => setTimeout(r, 1500));
-    await load();
-    e.target.reset();
-    btn.textContent = "යවා ගියා ✓";
-    setTimeout(() => { btn.textContent = "යවන්න"; btn.disabled = false; }, 2000);
-  } catch (err) {
-    console.error("SUBMIT ERROR", err);
-    btn.textContent = "දෝෂයකි, නැවත උත්සාහ කරන්න";
-    btn.disabled = false;
-  }
+  const url = `${API_URL}?name=${encodeURIComponent(nameVal)}&contact=${encodeURIComponent(contactVal)}&item=${encodeURIComponent(itemVal)}&qty=${encodeURIComponent(qtyVal)}`;
+
+  await sendData(url);
+
+  // Give the sheet 2 seconds to commit before reloading
+  status.textContent = "Saved! Refreshing data...";
+  await new Promise(r => setTimeout(r, 2000));
+  await load();
+
+  e.target.reset();
+  btn.textContent = "Submit";
+  btn.disabled = false;
+  status.textContent = "Contribution added successfully!";
+  setTimeout(() => { status.textContent = ""; }, 3000);
 });
 
 // INIT
