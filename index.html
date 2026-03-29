@@ -121,6 +121,35 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.qty-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.qty-wrap input {
+  flex: 1;
+  border: none;
+  border-radius: 0;
+  padding: 12px;
+  font-size: 16px;
+  outline: none;
+}
+
+.qty-wrap .unit-label {
+  padding: 0 14px;
+  color: #555;
+  font-size: 15px;
+  white-space: nowrap;
+  background: #f5f5f5;
+  border-left: 1px solid #ccc;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
 #status-msg {
   font-size: 14px;
   min-height: 18px;
@@ -191,7 +220,10 @@ td {
       <option>ලුණු මිරිස්</option>
     </select>
 
-    <input id="qty" type="number" min="1" placeholder="Quantity" required>
+    <div class="qty-wrap">
+      <input id="qty" type="number" min="1" placeholder="Quantity" required>
+      <span class="unit-label" id="qty-unit">—</span>
+    </div>
     <button type="submit" id="submitBtn">Submit</button>
     <div id="status-msg"></div>
   </form>
@@ -215,10 +247,10 @@ td {
 const API_URL = "https://script.google.com/macros/s/AKfycbyWVDNNqrE_GRaMMFxWHr6t0zAt6ulckRiluTfi3c1HAjMzuSdnAmn39hYJePT8p-na/exec";
 
 const config = {
-  "කිරි බත්":      { required: 100, unit: "pcs" },
-  "කට්ට සම්බෝල":  { required: 1,   unit: "dish" },
-  "සීනි සම්බල්":   { required: 1,   unit: "dish" },
-  "ලුණු මිරිස්":   { required: 1,   unit: "dish" }
+  "කිරි බත්":     { required: 100, unit: "කැට" },
+  "කට්ට සම්බෝල": { required: 5,   unit: "පිඟං" },
+  "සීනි සම්බල්":  { required: 5,   unit: "පිඟං" },
+  "ලුණු මිරිස්":  { required: 5,   unit: "පිඟං" }
 };
 
 let data = [];
@@ -261,11 +293,14 @@ function render() {
   Object.keys(config).forEach(item => {
     const t = totals[item];
     const req = config[item].required;
+    const unit = config[item].unit;
+    const remaining = Math.max(req - t, 0);
     const pct = Math.min((t / req) * 100, 100).toFixed(0);
     grid.innerHTML += `
       <div class="card">
         <strong>${item}</strong><br>
-        ${t} / ${req} ${config[item].unit}
+        Collected: ${t} / ${req} ${unit}<br>
+        <small>Remaining: ${remaining} ${unit}</small>
         <div class="progress">
           <div class="progress-bar" style="width:${pct}%"></div>
         </div>
@@ -302,6 +337,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
       await new Promise(r => setTimeout(r, 1000));
       await load();
       e.target.reset();
+      document.getElementById("qty-unit").textContent = "—";
       status.textContent = "Contribution added successfully!";
       setTimeout(() => { status.textContent = ""; }, 3000);
     } else {
@@ -314,6 +350,12 @@ document.getElementById("form").addEventListener("submit", async (e) => {
 
   btn.textContent = "Submit";
   btn.disabled = false;
+});
+
+// Update unit label when item is selected
+document.getElementById("item").addEventListener("change", function () {
+  const unit = config[this.value] ? config[this.value].unit : "—";
+  document.getElementById("qty-unit").textContent = unit;
 });
 
 // INIT
