@@ -392,8 +392,9 @@ td .qty-badge {
 
 <!-- HEADER -->
 <div class="header">
-  <div class="logo">
-    <img src="data:image/png;base64,REPLACE_THIS_BASE64" alt="logo">
+  <div class="logo" id="logoWrap">
+    <!-- Paste your full data URI below, e.g: data:image/jpeg;base64,/9j/... -->
+    <img id="logoImg" src="" alt="logo" style="display:none">
   </div>
   <h1>Albury Wodonga අලුත් අවුරුදු 2026</h1>
   <p class="subtitle">Community Contributions Tracker</p>
@@ -479,6 +480,31 @@ td .qty-badge {
 </div><!-- /page -->
 
 <script>
+// ── LOGO ─────────────────────────────────────────────────
+// Paste ONLY the base64 string here (no "data:image/..." prefix needed)
+// Supports PNG, JPEG, WEBP, GIF — format is auto-detected
+const LOGO_BASE64 = "";
+// ─────────────────────────────────────────────────────────
+
+(function () {
+  if (!LOGO_BASE64) return;
+  const raw = LOGO_BASE64.trim();
+  // If user pasted the full data URI, use it directly
+  const src = raw.startsWith("data:") ? raw : (() => {
+    // Auto-detect format from base64 magic bytes
+    const head = atob(raw.slice(0, 16));
+    const byte = head.charCodeAt(0);
+    const mime = byte === 0xFF ? "image/jpeg"
+               : byte === 0x89 ? "image/png"
+               : head.slice(0,4) === "RIFF" ? "image/webp"
+               : "image/png";
+    return `data:${mime};base64,${raw}`;
+  })();
+  const img = document.getElementById("logoImg");
+  img.src = src;
+  img.style.display = "";
+})();
+
 const API_URL = "https://script.google.com/macros/s/AKfycbyWVDNNqrE_GRaMMFxWHr6t0zAt6ulckRiluTfi3c1HAjMzuSdnAmn39hYJePT8p-na/exec";
 
 const config = {
