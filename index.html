@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>අලුත් අවුරුදු Contributions</title>
+
+<style>
+:root {
+  --red: #842032;
+  --yellow: #F6BB00;
+  --blue: #1E3A5F;
+  --bg: #f6f4ef;
+}
+
+* { box-sizing: border-box; font-family: Arial, sans-serif; }
+
+body { margin: 0; background: var(--bg); color: var(--blue); }
+
+/* HEADER */
+.header { background: var(--red); color: white; padding: 20px; text-align: center; }
+
+.logo {
+  width: 80px; height: 80px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ccc;
+}
+
+.logo img { width: 100%; height: 100%; object-fit: cover; }
+
+.section {
+  padding: 15px;
+  margin: 10px;
+  background: white;
+  border-radius: 12px;
+}
+
+.section h2 {
+  margin: 0 0 10px;
+  border-bottom: 2px solid var(--yellow);
+}
+
+/* STATUS */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.card {
+  background: var(--red);
+  color: white;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.progress {
+  height: 6px;
+  background: #ddd;
+  border-radius: 5px;
+  margin-top: 6px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--yellow);
+}
+
+/* FORM */
+form { display: grid; gap: 10px; }
+
+input, select {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--yellow);
+  font-weight: bold;
+}
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: var(--blue);
+  color: white;
+  padding: 8px;
+}
+
+td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="logo">
+    <img src="data:image/png;base64,REPLACE_THIS_BASE64">
+  </div>
+  <h1>Albury Wodonga අලුත් අවුරුදු 2026</h1>
+</div>
+
+<div class="section">
+  <h2>දැනට ලබාදී ඇති දායකත්වය</h2>
+  <div class="status-grid" id="statusGrid"></div>
+</div>
+
+<div class="section">
+  <h2>ඔබගේ දායකත්වය එක් කරන්න</h2>
+  <form id="form">
+    <input id="name" placeholder="නම" required>
+    <input id="contact" placeholder="දුරකථන අංකය" required>
+
+    <select id="item" required>
+      <option value="">අයිතමය</option>
+      <option>කිරි බත්</option>
+      <option>කට්ට සම්බෝල</option>
+      <option>සීනි සම්බල්</option>
+      <option>ලුණු මිරිස්</option>
+    </select>
+
+    <input id="qty" type="number" placeholder="ප්‍රමාණය" required>
+    <button type="submit">යවන්න</button>
+  </form>
+</div>
+
+<div class="section">
+  <h2>දායක වූවන්</h2>
+  <table>
+    <thead>
+      <tr><th>නම</th><th>අයිතමය</th><th>ප්‍රමාණය</th></tr>
+    </thead>
+    <tbody id="contributors"></tbody>
+  </table>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyWVDNNqrE_GRaMMFxWHr6t0zAt6ulckRiluTfi3c1HAjMzuSdnAmn39hYJePT8p-na/exec";
+
+const config = {
+  "කිරි බත්": { required: 100, unit: "pcs" },
+  "කට්ට සම්බෝල": { required: 1, unit: "පිඟානක්" },
+  "සීනි සම්බල්": { required: 1, unit: "පිඟානක්" },
+  "ලුණු මිරිස්": { required: 1, unit: "පිඟානක්" }
+};
+
+let data = [];
+
+async function load() {
+  const res = await fetch(API_URL + "?t=" + Date.now());
+  data = await res.json();
+  render();
+}
+
+function render() {
+  let totals = {};
+  Object.keys(config).forEach(i => totals[i] = 0);
+
+  data.forEach(r => {
+    if (totals[r.item] !== undefined) {
+      totals[r.item] += r.qty;
+    }
+  });
+
+  // STATUS
+  const grid = document.getElementById("statusGrid");
+  grid.innerHTML = "";
+
+  Object.keys(config).forEach(item => {
+    const t = totals[item];
+    const req = config[item].required;
+    const pct = Math.min((t / req) * 100, 100);
+
+    grid.innerHTML += `
+      <div class="card">
+        <strong>${item}</strong><br>
+        ${t} / ${req} ${config[item].unit}
+        <div class="progress">
+          <div class="progress-bar" style="width:${pct}%"></div>
+        </div>
+      </div>`;
+  });
+
+  // TABLE
+  const tbody = document.getElementById("contributors");
+  tbody.innerHTML = "";
+
+  data.forEach(r => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${r.name}</td>
+        <td>${r.item}</td>
+        <td>${r.qty}</td>
+      </tr>`;
+  });
+}
+
+// SUBMIT (GET)
+document.getElementById("form").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const name = name.value;
+  const contact = contact.value;
+  const item = item.value;
+  const qty = qty.value;
+
+  await fetch(`${API_URL}?name=${encodeURIComponent(name)}&contact=${encodeURIComponent(contact)}&item=${encodeURIComponent(item)}&qty=${encodeURIComponent(qty)}`);
+
+  await load();
+  e.target.reset();
+});
+
+load();
+</script>
+
+</body>
+</html>
